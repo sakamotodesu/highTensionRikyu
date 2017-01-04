@@ -18,7 +18,7 @@ object Rule {
   }
 
   def prepare(num: Int): ChakaiResult = {
-    ChakaiResult(List.range(0, num).map(Player(_, List(1, 2, 3, 4, 5), List())), List())
+    ChakaiResult(List.range(1, num + 1).map(Player(_, List(1, 2, 3, 4, 5), 0, List())), List())
   }
 
   def chakai(seasons: List[String], playerList: List[Player], restOfChagashi: List[Int], heartOfRikyu: List[Int]): ChakaiResult = {
@@ -28,26 +28,24 @@ object Rule {
       val kenjou = new randomKenjo
       val hodokoshi = new randomHodokoshi
       println(seasons.head)
-      val chakiList = playerList.map(p => kenjou.select(p.chaki))
-      val afterKenjo = playerList.map(p => Player(p.id, p.chaki.filterNot(_ == kenjou.select(p.chaki)), p.chagashi))
-      val afterHeart = judgeChaki(chakiList) :: heartOfRikyu
-      println(chakiList)
-      println(afterKenjo)
+      val afterKenjoPlayer = playerList.map(p => p.select(kenjou))
+      val afterHeart = judgeChaki(afterKenjoPlayer).selectChaki :: heartOfRikyu
+      println(afterKenjoPlayer)
       println(afterHeart)
-      chakai(seasons.tail, afterKenjo, restOfChagashi, afterHeart)
+      chakai(seasons.tail, afterKenjoPlayer, restOfChagashi, afterHeart)
     }
   }
 
-  def judgeChaki(chakiList: List[Int]): Int = {
-    if (chakiList.isEmpty) {
-      0
-    } else if (chakiList.size == 1) {
-      chakiList.head
+  def judgeChaki(playerList: List[Player]): Player = {
+    if (playerList.isEmpty) {
+      Player(0, List(), 0, List())
+    } else if (playerList.size == 1) {
+      playerList.head
     } else {
-      if (chakiList.count(_ == chakiList.sorted.head) == 1) {
-        chakiList.head
+      if (playerList.map(_.selectChaki).count(_ == playerList.head.selectChaki) == 1) {
+        playerList.head
       } else {
-        judgeChaki(chakiList.filter(_ != chakiList.sorted.head))
+        judgeChaki(playerList.filter(_.selectChaki != playerList.head.selectChaki))
       }
     }
   }
