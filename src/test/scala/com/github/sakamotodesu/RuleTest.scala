@@ -9,10 +9,10 @@ class RuleTest extends FunSuite {
 
   test("judgeChaki") {
 
-    assert(Rule.judgeChaki(players(List(1, 2, 3, 4, 5))) === 1)
-    assert(Rule.judgeChaki(players(List(1, 1, 3, 4, 5))) === 3)
-    assert(Rule.judgeChaki(players(List(1, 1, 3, 3, 5))) === 5)
-    assert(Rule.judgeChaki(players(List(1, 1, 1, 1, 1))) === 0)
+    assert(Rule.judgeChaki(players(List(1, 2, 3, 4, 5))).selectChaki === 1)
+    assert(Rule.judgeChaki(players(List(1, 1, 3, 4, 5))).selectChaki === 3)
+    assert(Rule.judgeChaki(players(List(1, 1, 3, 3, 5))).selectChaki === 5)
+    assert(Rule.judgeChaki(players(List(1, 1, 1, 1, 1))).selectChaki === 0)
   }
 
   def players(nums: List[Int]): List[Player] = {
