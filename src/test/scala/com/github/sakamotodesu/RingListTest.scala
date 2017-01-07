@@ -50,4 +50,14 @@ class RingListTest extends FunSuite {
     assert(rr2.next === 5)
 
   }
+
+  test("RingList seek") {
+    val r = RingList(List.range(0, 6))
+    assert(r.seek(3) === Some(3))
+    assert(r.current === 3)
+    assert(r.next === 4)
+    assert(r.next === 5)
+    assert(r.seek(2) === Some(2))
+    assert(r.current === 2)
+  }
 }
