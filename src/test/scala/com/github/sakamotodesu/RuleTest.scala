@@ -20,4 +20,13 @@ class RuleTest extends FunSuite {
       Player(i + 1, List(), nums(i), List())
     a.toList
   }
+
+  test("select start player") {
+    assert(Rule.selectStart(players(List(1, 2, 3, 4, 5)), 0).head.id === 1)
+    assert(Rule.selectStart(players(List(1, 2, 3, 4, 5)), 1).head.id === 2)
+    assert(Rule.selectStart(players(List(1, 2, 3, 4, 5)), 2).head.id === 3)
+    assert(Rule.selectStart(players(List(1, 2, 3, 4, 5)), 3).head.id === 4)
+    assert(Rule.selectStart(players(List(1, 2, 3, 4, 5)), 4).head.id === 5)
+    assert(Rule.selectStart(players(List(1, 2, 3, 4, 5)), 5).head.id === 1)
+  }
 }
