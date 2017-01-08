@@ -15,6 +15,12 @@ trait Ring[A] {
 
   def seek(a: A): Option[A]
 
+  def map[B](f: A => B): Ring[B]
+
+  def replaceCurrent(a: A): Ring[A]
+
+  def toList: List[A]
+
 }
 
 object RingList {
@@ -43,7 +49,13 @@ class RingList[A](list: List[A], id: Int = 0) extends Ring[A] {
 
   override def size: Int = ringList.size
 
-  override def reverse: Ring[A] = RingList(ringList.reverse, ringList.size - 1 - currentId)
+  override def reverse: RingList[A] = RingList(ringList.reverse, ringList.size - 1 - currentId)
+
+  override def toList: List[A] = {
+    val t = ringList.take(currentId)
+    val d = ringList.drop(currentId)
+    t ::: d
+  }
 
   override def seek(a: A): Option[A] = {
     val t = ringList.take(currentId)
@@ -59,7 +71,17 @@ class RingList[A](list: List[A], id: Int = 0) extends Ring[A] {
     }
   }
 
+  override def map[B](f: (A) => B): RingList[B] = {
+    val t = ringList.take(currentId)
+    val d = ringList.drop(currentId)
+    RingList(d.map(f) ::: t.map(f))
+  }
+
+  override def replaceCurrent(a: A): RingList[A] = {
+    val t = ringList.take(currentId)
+    val d = ringList.drop(currentId + 1)
+    RingList(t ::: a :: d, currentId)
+  }
+
   override def toString: String = currentId.toString + " : " + ringList.toString()
-
-
 }

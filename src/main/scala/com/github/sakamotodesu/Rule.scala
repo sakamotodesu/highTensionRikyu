@@ -5,85 +5,71 @@ package com.github.sakamotodesu
   */
 object Rule {
 
+  val maxChakiGrade = 5
+  val playerNum = 4
 
   def main(args: Array[String]) {
-    val num = 4
-    val allChaki = List.fill(6)(List(1, 2, 3, 4, 5)).flatten
-    val allChagashi: List[Int] = List.fill(6)(List(3, 4, 5, 6, 7)).flatten
 
-    val playerList = prepare(num)
-
+    val allChagashi: List[Int] = scala.util.Random.shuffle(List.fill(6)(List(3, 4, 5, 6, 7)).flatten)
+    val playerList = prepare(playerNum)
     val seasons = List("Spring", "Summer", "Fall", "Winter")
-    chakai(seasons, playerList, allChagashi, List())
+    val heart = HeartOfRikyu(List(), List(), List(), List())
+    chakai(seasons, playerList, allChagashi, heart)
   }
 
-  def prepare(num: Int): List[Player] = {
+  def prepare(num: Int): RingList[Player] = {
     val r = scala.util.Random
-    selectStart(List.range(1, num + 1).map(Player(_, List(1, 2, 3, 4, 5), 0, List())), r.nextInt(num))
-  }
-
-  def selectStart(playerList: List[Player], num: Int): List[Player] = {
-    if (num == 0) {
-      playerList
-    } else {
-      selectStart((playerList.head :: playerList.tail.reverse).reverse, num - 1)
+    val rl = RingList(List.range(1, num + 1).map(Player(_, List.range(1, maxChakiGrade), new RandomHodokoshi, new RandomKenjo)))
+    for (i <- 0 to r.nextInt(num)) {
+      rl.next
     }
+    rl
   }
 
-  def chakai(seasons: List[String], playerList: List[Player], restOfChagashi: List[Int], heartOfRikyu: List[Int]): ChakaiResult = {
+  def chakai(seasons: List[String], playerList: RingList[Player], restOfChagashi: List[Int], heart: HeartOfRikyu): ChakaiResult = {
     if (seasons.isEmpty) {
-      ChakaiResult(playerList, heartOfRikyu)
+      ChakaiResult(playerList, heart)
     } else {
-      val kenjou = new randomKenjo
-      val hodokoshi = new randomHodokoshi
       println("===" + seasons.head + "===")
       println(playerList)
 
-      val afterKenjouPlayerList = playerList.map(p => p.select(kenjou))
-      println(afterKenjouPlayerList)
+      val (afterKenjouPlayerList, hh) = selectChaki(playerList, heart)
 
-      val kenjouPlayer = judgeChaki(afterKenjouPlayerList)
-      println(kenjouPlayer)
-      if (kenjouPlayer.id == 0) {
-        chakai(seasons.tail, playerList, restOfChagashi, heartOfRikyu)
-      }
+      val afterChakiHeart = hh.judgeChaki(maxChakiGrade)
+      println(afterChakiHeart)
 
-      val afterHeart = kenjouPlayer.selectChaki :: heartOfRikyu
-      val i = afterKenjouPlayerList.indexOf(kenjouPlayer)
-      val f = selectStart(afterKenjouPlayerList, i).reverse
-      val forHodokoshiPlayerList = f.last :: f.init
-      println(forHodokoshiPlayerList)
-      val (afterChakai, rest) = chagashiHodokoshi(forHodokoshiPlayerList, restOfChagashi, hodokoshi, 4)
-      println(afterChakai)
-      println(afterHeart)
-      chakai(seasons.tail, afterChakai.reverse, rest, afterHeart)
+      val startHodokoshiPlayer = afterChakiHeart.heart.head._1
+      afterKenjouPlayerList.seek(startHodokoshiPlayer)
+
+      val (restChagashi, afterHodokoshi) = chagashiHodokoshi(afterKenjouPlayerList.reverse, restOfChagashi, afterChakiHeart, 4)
+
+      chakai(seasons.tail, afterKenjouPlayerList, restChagashi, afterHodokoshi)
     }
   }
 
-  def chagashiHodokoshi(playerList: List[Player], restOfChagashi: List[Int], h: hodokoshi, count: Int): (List[Player], List[Int]) = {
-    println(playerList)
+  def selectChaki(playerList: RingList[Player], heart: HeartOfRikyu): (RingList[Player], HeartOfRikyu) = {
+    if (heart.chakiElection.size == playerNum) {
+      (playerList, heart)
+    } else {
+      val player = playerList.current
+      val chaki = player.k.select(heart, player)
+      val after = heart.addCandidateChaki(player, chaki, omote = true)
+      val pp = playerList.replaceCurrent(Player(player.id, player.chakiList.filterNot(_ == chaki), player.h, player.k))
+      pp.next
+      selectChaki(pp, after)
+    }
+  }
+
+  def chagashiHodokoshi(playerList: RingList[Player], chagashiList: List[Int], heart: HeartOfRikyu, count: Int): (List[Int], HeartOfRikyu) = {
     if (count == 0) {
-      (playerList, restOfChagashi)
+      (chagashiList, heart)
     } else {
-      val c = h.select(restOfChagashi)
-      val i = restOfChagashi.indexOf(c)
-      val p = Player(playerList.head.id, playerList.head.chakiList, playerList.head.selectChaki, c :: playerList.head.chagashi)
-      chagashiHodokoshi((p :: playerList.tail.reverse).reverse,
-        restOfChagashi.take(i) ::: restOfChagashi.drop(i + 1), h, count - 1)
-    }
-  }
+      val player = playerList.current
+      val chagashi = player.h.select(heart, player, chagashiList)
+      playerList.next
+      val rest = chagashiList.take(chagashiList.indexOf(chagashi)) ::: chagashiList.drop(chagashiList.indexOf(chagashi) + 1)
+      chagashiHodokoshi(playerList, rest, heart.addChagashi(player, chagashi), count - 1)
 
-  def judgeChaki(playerList: List[Player]): Player = {
-    if (playerList.isEmpty) {
-      Player(0, List(), 0, List())
-    } else if (playerList.size == 1) {
-      playerList.head
-    } else {
-      if (playerList.map(_.selectChaki).count(_ == playerList.head.selectChaki) == 1) {
-        playerList.head
-      } else {
-        judgeChaki(playerList.filter(_.selectChaki != playerList.head.selectChaki))
-      }
     }
   }
 
