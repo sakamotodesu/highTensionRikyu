@@ -26,7 +26,6 @@ case class HeartOfRikyu(heart: List[(Player, Int)],
 
   def judgeChaki(maxChakiGrade: Int): HeartOfRikyu = {
     for (i <- 1 to maxChakiGrade) {
-      println(chakiElection.count(_._2 == i))
       if (chakiElection.count(_._2 == i) == 1) {
         val (player, chaki, omote) = chakiElection.filter(_._2 == i).head
        return addHeart(player, chaki)
