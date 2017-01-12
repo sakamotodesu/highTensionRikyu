@@ -1,5 +1,6 @@
 package com.github.sakamotodesu
 
+
 /**
   * Created by sakamotominoru on 2017/01/07.
   */
@@ -14,6 +15,8 @@ trait Ring[A] {
   def reverse: Ring[A]
 
   def seek(a: A): Option[A]
+
+  def seek(f: A => Boolean): Option[A]
 
   def map[B](f: A => B): Ring[B]
 
@@ -58,18 +61,23 @@ class RingList[A](list: List[A], id: Int = 0) extends Ring[A] {
   }
 
   override def seek(a: A): Option[A] = {
+    seek(x => x.equals(a))
+  }
+
+  override def seek(f: A => Boolean): Option[A] = {
     val t = ringList.take(currentId)
     val d = ringList.drop(currentId)
-    if (d.indexOf(a) != -1) {
-      currentId = d.indexOf(a)
+    if (d.indexOf(f) != -1) {
+      currentId = d.indexOf(f)
       Some(ringList(currentId))
-    } else if (t.indexOf(a) != -1) {
-      currentId = t.indexOf(a)
+    } else if (t.indexOf(f) != -1) {
+      currentId = t.indexOf(f)
       Some(ringList(currentId))
     } else {
       None
     }
   }
+
 
   override def map[B](f: (A) => B): RingList[B] = {
     val t = ringList.take(currentId)

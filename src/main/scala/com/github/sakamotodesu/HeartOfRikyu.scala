@@ -3,24 +3,25 @@ package com.github.sakamotodesu
 /**
   * Created by sakamotominoru on 2017/01/08.
   */
-case class HeartOfRikyu(heart: List[(Player, Int)],
-                        chakiElection: List[(Player, Int, Boolean)],
-                        hazukashimeChaki: List[(Player, Int)],
-                        collectChagashi: List[(Player, Int)]) {
+case class HeartOfRikyu(heart: List[(ID, Chaki)],
+                        chakiElection: List[(ID, Chaki, Boolean)],
+                        hazukashimeChaki: List[(ID, Chaki)],
+                        collectChagashi: List[(ID, Chagashi)]) {
+  // Player, Chagashi
 
-  def addHeart(player: Player, chaki: Int): HeartOfRikyu = {
+  def addHeart(player: ID, chaki: Chaki): HeartOfRikyu = {
     HeartOfRikyu((player, chaki) :: heart, chakiElection, hazukashimeChaki, collectChagashi)
   }
 
-  def addCandidateChaki(player: Player, chaki: Int, omote: Boolean): HeartOfRikyu = {
+  def addCandidateChaki(player: ID, chaki: Chaki, omote: Boolean): HeartOfRikyu = {
     HeartOfRikyu(heart, (player, chaki, omote) :: chakiElection, hazukashimeChaki, collectChagashi)
   }
 
-  def addHazukashime(player: Player, chaki: Int): HeartOfRikyu = {
+  def addHazukashime(player: ID, chaki: Chaki): HeartOfRikyu = {
     HeartOfRikyu(heart, chakiElection, (player, chaki) :: hazukashimeChaki, collectChagashi)
   }
 
-  def addChagashi(player: Player, chagashi: Int): HeartOfRikyu = {
+  def addChagashi(player: ID, chagashi: Chagashi): HeartOfRikyu = {
     HeartOfRikyu(heart, chakiElection, hazukashimeChaki, (player, chagashi) :: collectChagashi)
   }
 
@@ -28,8 +29,8 @@ case class HeartOfRikyu(heart: List[(Player, Int)],
     for (i <- 1 to maxChakiGrade) {
       if (chakiElection.count(_._2 == i) == 1) {
         val (player, chaki, omote) = chakiElection.filter(_._2 == i).head
-       return addHeart(player, chaki)
-     }
+        return addHeart(player, chaki)
+      }
     }
     this
   }

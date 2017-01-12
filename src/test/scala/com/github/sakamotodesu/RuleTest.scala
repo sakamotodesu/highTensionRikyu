@@ -22,10 +22,10 @@ class RuleTest extends FunSuite {
 
   def addChaki(chakiList: List[Int], heart: HeartOfRikyu, id: Int): HeartOfRikyu = {
     if (chakiList.size == 1) {
-      heart.addCandidateChaki(Player(0, List(), new RandomHodokoshi, new RandomKenjo), chakiList.head, omote = true)
+      heart.addCandidateChaki(0, chakiList.head, omote = true)
     } else {
       addChaki(chakiList.tail,
-        heart.addCandidateChaki(Player(0, List(), new RandomHodokoshi, new RandomKenjo), chakiList.head, omote = true),
+        heart.addCandidateChaki(0, chakiList.head, omote = true),
         id + 1)
     }
 

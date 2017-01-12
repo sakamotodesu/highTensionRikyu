@@ -31,15 +31,16 @@ object Rule {
       ChakaiResult(playerList, heart)
     } else {
       println("===" + seasons.head + "===")
+      val hheart = HeartOfRikyu(heart.heart,List(),heart.hazukashimeChaki,heart.collectChagashi)
       println(playerList)
-
-      val (afterKenjouPlayerList, hh) = selectChaki(playerList, heart)
-
+      println("start! " + hheart)
+      val (afterKenjouPlayerList, hh) = selectChaki(playerList, hheart)
+      println("select chaki:" + hh)
       val afterChakiHeart = hh.judgeChaki(maxChakiGrade)
-      println(afterChakiHeart)
+      println("judge! " + afterChakiHeart)
 
       val startHodokoshiPlayer = afterChakiHeart.heart.head._1
-      afterKenjouPlayerList.seek(startHodokoshiPlayer)
+      afterKenjouPlayerList.seek(x => x.id == startHodokoshiPlayer)
 
       val (restChagashi, afterHodokoshi) = chagashiHodokoshi(afterKenjouPlayerList.reverse, restOfChagashi, afterChakiHeart, 4)
 
@@ -53,7 +54,7 @@ object Rule {
     } else {
       val player = playerList.current
       val chaki = player.k.select(heart, player)
-      val after = heart.addCandidateChaki(player, chaki, omote = true)
+      val after = heart.addCandidateChaki(player.id, chaki, omote = true)
       val pp = playerList.replaceCurrent(Player(player.id, player.chakiList.filterNot(_ == chaki), player.h, player.k))
       pp.next
       selectChaki(pp, after)
@@ -68,7 +69,7 @@ object Rule {
       val chagashi = player.h.select(heart, player, chagashiList)
       playerList.next
       val rest = chagashiList.take(chagashiList.indexOf(chagashi)) ::: chagashiList.drop(chagashiList.indexOf(chagashi) + 1)
-      chagashiHodokoshi(playerList, rest, heart.addChagashi(player, chagashi), count - 1)
+      chagashiHodokoshi(playerList, rest, heart.addChagashi(player.id, chagashi), count - 1)
 
     }
   }
