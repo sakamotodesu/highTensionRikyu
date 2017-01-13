@@ -67,14 +67,15 @@ class RingList[A](list: List[A], id: Int = 0) extends Ring[A] {
   override def seek(f: A => Boolean): Option[A] = {
     val t = ringList.take(currentId)
     val d = ringList.drop(currentId)
-    if (d.indexOf(f) != -1) {
-      currentId = d.indexOf(f)
-      Some(ringList(currentId))
-    } else if (t.indexOf(f) != -1) {
-      currentId = t.indexOf(f)
-      Some(ringList(currentId))
-    } else {
-      None
+    d.find(f).flatMap { a =>
+      currentId = d.indexOf(a) + t.size
+      Some(d.indexOf(a))
+    } match {
+      case Some(a) => Some(d(a))
+      case None => t.find(f).flatMap { b =>
+        currentId = t.indexOf(b)
+        Some(b)
+      }
     }
   }
 
