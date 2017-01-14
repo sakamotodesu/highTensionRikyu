@@ -15,6 +15,7 @@ object Rule {
     val seasons = List("Spring", "Summer", "Fall", "Winter")
     val heart = HeartOfRikyu(List(), List(), List(), List())
     val result = chakai(seasons, playerList, allChagashi, heart)
+    println(result.heartOfRikyu.hantei(result.playerList))
 
   }
 
@@ -40,12 +41,14 @@ object Rule {
       val afterChakiHeart = hh.judgeChaki(maxChakiGrade)
       println("judge! " + afterChakiHeart)
 
-      val startHodokoshiPlayer = afterChakiHeart.heart.head._1
-      afterKenjouPlayerList.seek(x => x.id == startHodokoshiPlayer)
-
-      val (restChagashi, afterHodokoshi) = chagashiHodokoshi(afterKenjouPlayerList.reverse, restOfChagashi, afterChakiHeart, 4)
-
-      chakai(seasons.tail, afterKenjouPlayerList, restChagashi, afterHodokoshi)
+      if (afterChakiHeart.heart.isEmpty) {
+        chakai(seasons.tail, afterKenjouPlayerList, restOfChagashi, afterChakiHeart)
+      } else {
+        val startHodokoshiPlayer = afterChakiHeart.heart.head._1
+        afterKenjouPlayerList.seek(x => x.id == startHodokoshiPlayer)
+        val (restChagashi, afterHodokoshi) = chagashiHodokoshi(afterKenjouPlayerList.reverse, restOfChagashi, afterChakiHeart, 4)
+        chakai(seasons.tail, afterKenjouPlayerList, restChagashi, afterHodokoshi)
+      }
     }
   }
 
@@ -75,4 +78,4 @@ object Rule {
     }
   }
 
-  }
+}

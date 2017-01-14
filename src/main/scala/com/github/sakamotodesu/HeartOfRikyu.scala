@@ -50,8 +50,49 @@ case class HeartOfRikyu(heart: List[(ID, Chaki)],
         }
       }
     }
+
     rec(collectChagashi, List())
   }
+
+  def hantei(playerList: RingList[Player]): ID = {
+    val t = tension()
+    println("tension : " + t)
+    val total = totalChagashi()
+    println("total chagashi : " + total)
+    val a = total.filter(_._2 >= t)
+    println("over total : " + a)
+    if (a.isEmpty) {
+      0
+    }
+    val min = a.minBy(_._2)
+    println("min : " + min)
+    val minChagashi = a.filter(_._2 == min._2)
+    println("minChagashi : " + minChagashi)
+    if (minChagashi.size == 1) {
+      minChagashi.head._1
+    } else {
+      val p = minChagashi.flatMap(y => playerList.seek(x => x.id == y._1))
+      val mm = p.minBy(_.chakiList.head)
+      val goodChaki = p.filter(_.chakiList.head == mm.chakiList.head)
+      if (goodChaki.size == 1) {
+        goodChaki.head.id
+      } else {
+        val h = goodChaki.map(x => (x.id, hazukashimeChaki.count(y => x.id == y._1)))
+        val hh = h.filter(_._2 == h.minBy(_._2))
+        if (hh.size == 1) {
+          hh.head._1
+        } else {
+          0
+        }
+      }
+    }
+  }
+
+
+  def hazukashime(minChagashi: List[(ID, Chagashi)], hazukashimeChaki: List[(ID, Chaki)]): Unit = {
+
+  }
+
 }
 
 
