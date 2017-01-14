@@ -69,10 +69,9 @@ class RingList[A](list: List[A], id: Int = 0) extends Ring[A] {
     val d = ringList.drop(currentId)
     d.find(f).flatMap { a =>
       currentId = d.indexOf(a) + t.size
-      Some(d.indexOf(a))
-    } match {
-      case Some(a) => Some(d(a))
-      case None => t.find(f).flatMap { b =>
+      Some(a)
+    } orElse {
+      t.find(f).flatMap { b =>
         currentId = t.indexOf(b)
         Some(b)
       }
