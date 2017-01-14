@@ -28,6 +28,7 @@ class RuleTest extends FunSuite {
         heart.addCandidateChaki(0, chakiList.head, omote = true),
         id + 1)
     }
-
   }
+
+
 }

@@ -14,7 +14,8 @@ object Rule {
     val playerList = prepare(playerNum)
     val seasons = List("Spring", "Summer", "Fall", "Winter")
     val heart = HeartOfRikyu(List(), List(), List(), List())
-    chakai(seasons, playerList, allChagashi, heart)
+    val result = chakai(seasons, playerList, allChagashi, heart)
+
   }
 
   def prepare(num: Int): RingList[Player] = {
@@ -31,7 +32,7 @@ object Rule {
       ChakaiResult(playerList, heart)
     } else {
       println("===" + seasons.head + "===")
-      val hheart = HeartOfRikyu(heart.heart,List(),heart.hazukashimeChaki,heart.collectChagashi)
+      val hheart = HeartOfRikyu(heart.heart, List(), heart.hazukashimeChaki, heart.collectChagashi)
       println(playerList)
       println("start! " + hheart)
       val (afterKenjouPlayerList, hh) = selectChaki(playerList, hheart)
@@ -74,4 +75,4 @@ object Rule {
     }
   }
 
-}
+  }

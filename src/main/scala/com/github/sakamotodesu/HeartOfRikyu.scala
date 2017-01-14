@@ -34,6 +34,24 @@ case class HeartOfRikyu(heart: List[(ID, Chaki)],
     }
     this
   }
+
+  def tension(): Int = {
+    heart.foldLeft(0)((z, n) => z + (6 - n._2))
+  }
+
+  def totalChagashi(): List[(ID, Chagashi)] = {
+    def rec(cha: List[(ID, Chagashi)], total: List[(ID, Chagashi)]): List[(ID, Chagashi)] = {
+      if (cha.isEmpty) {
+        total
+      } else {
+        total.find(x => x._1 == cha.head._1) match {
+          case Some(x) => rec(cha.tail, (cha.head._1, cha.head._2 + x._2) :: total.filter(x != _))
+          case None => rec(cha.tail, cha.head :: total)
+        }
+      }
+    }
+    rec(collectChagashi, List())
+  }
 }
 
 
