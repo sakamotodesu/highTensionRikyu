@@ -72,13 +72,18 @@ case class HeartOfRikyu(heart: List[(ID, Chaki)],
       minChagashi.head._1
     } else {
       val p = minChagashi.flatMap(y => playerList.seek(x => x.id == y._1))
+      println("good Chaki List : " + p)
       val mm = p.minBy(_.chakiList.head)
       val goodChaki = p.filter(_.chakiList.head == mm.chakiList.head)
+      println("good Chaki : " + goodChaki)
       if (goodChaki.size == 1) {
         goodChaki.head.id
       } else {
         val h = goodChaki.map(x => (x.id, hazukashimeChaki.count(y => x.id == y._1)))
-        val hh = h.filter(_._2 == h.minBy(_._2))
+        println("hazukashime Count : " + h)
+        val hm = h.minBy(_._2)
+        val hh = h.filter(_._2 == hm._2)
+        println("hazukashime : " + hh)
         if (hh.size == 1) {
           hh.head._1
         } else {

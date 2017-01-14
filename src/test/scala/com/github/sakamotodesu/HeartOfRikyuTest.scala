@@ -26,4 +26,26 @@ class HeartOfRikyuTest extends FunSuite {
     assert(HeartOfRikyu(List(), List(), List(), List((1, 1), (2, 1))).totalChagashi() == List((2, 1), (1, 1)))
     assert(HeartOfRikyu(List(), List(), List(), List((1, 1), (2, 2), (1, 3), (2, 4))).totalChagashi() == List((2, 6), (1, 4)))
   }
+
+
+  test("hantei") {
+    assert(HeartOfRikyu(List((1, 1)), List(), List(), List((1, 6)))
+      .hantei(RingList(List(Player(1, List(2), new RandomHodokoshi, new RandomKenjo)))) == 1)
+
+    assert(HeartOfRikyu(List((1, 1), (2, 2)), List(), List(), List((1, 6), (2, 6), (1, 7), (2, 8)))
+      .hantei(RingList(List(Player(1, List(2), new RandomHodokoshi, new RandomKenjo),
+        Player(2, List(1), new RandomHodokoshi, new RandomKenjo)))) == 1)
+
+    assert(HeartOfRikyu(List((1, 1), (2, 2)), List(), List(), List((1, 6), (2, 6), (1, 7), (2, 7)))
+      .hantei(RingList(List(Player(1, List(2), new RandomHodokoshi, new RandomKenjo),
+        Player(2, List(1), new RandomHodokoshi, new RandomKenjo)))) == 2)
+
+    assert(HeartOfRikyu(List((1, 1), (2, 2), (3, 3)), List(),
+      List((1, 2), (1, 3), (2, 1), (2, 3), (3, 1)), List((1, 6), (2, 6), (3, 6), (1, 7), (2, 7), (3, 7), (1, 8), (2, 8), (3, 8)))
+      .hantei(RingList(List(Player(1, List(2), new RandomHodokoshi, new RandomKenjo),
+        Player(2, List(1), new RandomHodokoshi, new RandomKenjo),
+        Player(3, List(1), new RandomHodokoshi, new RandomKenjo)))) == 3)
+  }
+
+
 }
